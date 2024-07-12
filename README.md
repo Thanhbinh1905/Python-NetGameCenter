@@ -1,9 +1,11 @@
 # Python-NetGameCenter
 ///////////////////////////////////
+
 Environment:
 1. SQL Server
 2. Python (Flask, pypyodbc)
 ///////////////////////////////////
+
 How to run:
 1. Set up your environment:
    -  Download SQL Server and SSMS.
