@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADMIN Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}"> 
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/menu.css') }}"> 
+    <link rel="icon" href="{{ url_for('static', filename='img/fav.png') }}">
+</head>
+<body>
+    <div class="main">
+        <div class="container-fluid">
+            <nav class="navbar navbar-expand-lg navbar-light">
+                <a class="navbar-brand" href="{{ url_for('admin_manage') }}">
+                    <img src="{{ url_for('static', filename='img/fav.png') }}" width="60" height="60" alt="">
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item active">
+                            <a class="nav-link" href="{{ url_for('admin_manage') }}">Computers</a>
+                        </li>
+                        <li class="nav-item active">
+                            <a class="nav-link" href="{{ url_for('user_mng') }}">Account</a>
+                        </li>
+                    </ul>
+                </div>
+                <a href="{{ url_for('logout') }}" class="btn btn-outline-secondary float-end">Logout</a>
+            </nav>
+            <div class="row">
+                <div class="col-md-8 pe-4">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="box">
+                                <div class="fw-bold">Revenue Today</div>
+                                <div class="fw-bold fs-4">{{ total_amount_today }} VND</div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="box">
+                                <div class="fw-bold">Seat Ongoing</div>
+                                <div class="fw-bold fs-4">{{ total_activated }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="row fw-bold fs-4 mt-3" style="justify-content: center;">COMPUTER CONFIG</p>
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <a href="{{ url_for('add_computer') }}" class="btn btn-success">Add New Configuration</a>
+                        </div>
+                        <div class="table-holder" style="overflow-y: auto; max-height: 200px;">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th class="col-1">Id</th>
+                                        <th class="col-10">Configurations</th>
+                                        <th class="col-1" colspan="2">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for row in computers_data %}
+                                    <tr>
+                                        <td>{{ row[0] }}</td>
+                                        <td>{{ row[1] }}</td>
+                                        <td>
+                                            <a href="{{ url_for('edit_computer', computer_id=row[0]) }}" class="btn btn-primary btn-sm">Edit</a>
+                                        </td>
+                                        <td>
+                                            <form action="{{ url_for('delete_computer', computer_id=row[0]) }}" method="POST" style="display:inline;">
+                                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this computer?');">Delete</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <p class="row fw-bold fs-4 mt-3" style="justify-content: center;">Seat Management</p>
+                        <form action="{{ url_for('add_seat') }}" method="POST">
+                            <input type="number" name="seat_id" placeholder="Seat ID" required>
+                            <input type="number" name="computer_id" placeholder="Computer ID" required>
+                            <button type="submit" class="btn btn-success">Add Seat</button>
+                        </form>
+                        <div class="table-holder" style="overflow-y: auto; max-height: 250px;">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th class="col-1">Seat ID</th>
+                                        <th class="col-10">Computer Configurations</th>
+                                        <th class="col-1" colspan="2">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for row in seats_computers_data %}
+                                    <tr>
+                                        <td>{{ row[0] }}</td>
+                                        <td>{{ row[1] }}</td>
+                                        <td>
+                                            <a href="{{ url_for('edit_seat', seat_id=row[0]) }}" class="btn btn-primary btn-sm">Edit</a>
+                                        </td>
+                                        <td>
+                                            <form action="{{ url_for('delete_seat', seat_id=row[0]) }}" method="POST" style="display:inline;">
+                                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this seat?');">Delete</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 ">
+                    <div class="row table-holder">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th class="col-6">Seat ID</th>
+                                    <th class="col-6">Usage Count</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in datatop5 %}
+                                <tr>
+                                    <td>{{ row[0] }}</td>
+                                    <td>{{ row[1] }} Times</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="row fw-bold fs-4 mt-3" style="justify-content: center;">REVENUE</p>
+                    <div class="row mt-3">
+                        <div class="table-holder">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th class="col-3">Date</th>
+                                        <th class="col-9">Total Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for row in revenue_data %}
+                                    <tr>
+                                        <td>{{ row[0] }}</td>
+                                        <td>{{ row[1] }} VND</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/jquery-3.6.0.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+</body>
+</html>

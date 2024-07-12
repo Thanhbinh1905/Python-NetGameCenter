@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetCucDinh</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/menu.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='img/fav.png') }}">
+</head>
+<body>
+    <div class="main">
+        <div class="container-fluid">
+            <nav class="navbar navbar-expand-lg navbar-light">
+                <a class="navbar-brand" href="{{ url_for('main_menu') }}">
+                    <img src="{{ url_for('static', filename='img/fav.png') }}" width="60" height="60" alt="">
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item active">
+                            <a class="nav-link" href="{{ url_for('main_menu') }}">Management</a>
+                        </li>
+                        <li class="nav-item active">
+                            <a class="nav-link" href="{{ url_for('report') }}">Report</a>
+                        </li>
+                        <!-- <li class="nav-item">
+                            <a class="nav-link disabled" href="#">Account</a>
+                        </li> -->
+                    </ul>
+                </div>
+                <a href="{{ url_for('logout') }}" class="btn btn-outline-secondary float-end">Logout</a>
+            </nav>
+            <div class="row search-bar-row">
+                <div class="col-5">
+                    <form method="post" action="{{ url_for('filter_table') }}">
+                        <div class="input-group mb-3 ms-2">
+                            <input type="text" class="form-control" placeholder="Enter ID" name="seat_id">
+                            <div class="input-group-append" style="margin-left: 1vh;">
+                                <button class="btn btn-outline-secondary" type="submit">Search</button>
+                            </div>
+                            <a href="{{ url_for('main_menu') }}" class="btn btn-outline-secondary" style="margin-left: 1vh; border-radius: 5px;">Làm mới</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="row table-row">
+                <div class="col-md-9 table-holder" id="table-container">
+                    <table class="table table-hover" id="seat-table">
+                        <thead>
+                            <tr>
+                                <th class="col-1">ID</th>
+                                <th class="col-8">Configurations</th>
+                                <th class="col-1">Status</th>
+                                <th class="col-2">Start Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in data %}
+                            <tr class="seat-row" data-seat-id="{{ row[0] }}" data-seat-configuration="{{ row[1] }}"
+                                data-seat-status="{{ row[2] }}" data-seat-start-time="{{ row[3] }}">
+                                <td>{{ row[0] }}</td>
+                                <td>{{ row[1] }}</td>
+                                <td>{{ row[2] }}</td>
+                                <td>{{ row[3] }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-3">
+                    <div class="details">
+                        <div id="selected-seat-details">
+                            <h2>Seat Details</h2>
+                            <div id="seat-details">
+                                <p><strong>ID:</strong> <span id="seat-id"></span></p>
+                                <p><strong>Configuration:</strong> <span id="seat-configuration"></span></p>
+                                <p><strong>Status:</strong> <span id="seat-status"></span></p>
+                                <p><strong>Start Time:</strong> <span id="seat-start-time"></span></p>
+                            </div>
+                            <button style="display: none;" class="btn btn-outline-secondary ss-action-btn d-block mx-auto" type="button">Select Seat</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/jquery-3.6.0.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            $('.seat-row').click(function () {
+                var seatId = $(this).data('seat-id');
+                var configuration = $(this).data('seat-configuration');
+                var status = $(this).data('seat-status');
+                var startTime = $(this).data('seat-start-time');
+
+                // Update seat details
+                $('#seat-id').text(seatId);
+                $('#seat-status').text(status);
+                $('#seat-configuration').text(configuration);
+                if (status === 'Active') {
+                    $('#seat-start-time').text(startTime);
+                    $('.ss-action-btn').text('Stop').show();
+                } else {
+                    $('#seat-start-time').text('--');
+                    $('.ss-action-btn').text('Start').show();
+                }
+                $('#selected-seat-details').show();
+            });
+
+            $('.ss-action-btn').click(function () {
+                var actionText = $(this).text();
+                var seatId = $('#seat-id').text();
+                
+                console.log(actionText);
+                // Perform action based on button text
+                if (actionText === 'Start') {
+                    const userConfirmed = confirm("Do you want to start the seat?");
+                    if (userConfirmed) {
+                        // AJAX request to start the seat
+                        $.ajax({
+                            type: 'POST',
+                            url: '/start_seat',
+                            contentType: 'application/json',
+                            data: JSON.stringify({ 'seat_id': seatId }),
+                            success: function (response) {
+                                console.log('Start action successful:', response);
+                                $('.ss-action-btn').text('Stop').show();
+                                location.reload();
+                            },
+                            error: function (error) {
+                                console.error('Error starting seat:', error);
+                            }
+                        });
+                    }
+                } else if (actionText === 'Stop') {
+                    window.location.href = '/stop_seat/' + seatId;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

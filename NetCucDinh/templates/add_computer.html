@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Computer Configuration</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Add Computer Configuration</h2>
+        <form method="POST" action="{{ url_for('add_computer') }}">
+            <div class="form-group">
+                <label for="config">Configuration</label>
+                <input type="text" class="form-control" id="config" name="config" required>
+            </div>
+            <button type="submit" class="btn btn-success mt-2">Add</button>
+            <a href="{{ url_for('admin_manage') }}" class="btn btn-secondary mt-2">Cancel</a>
+        </form>
+    </div>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+</body>
+</html>

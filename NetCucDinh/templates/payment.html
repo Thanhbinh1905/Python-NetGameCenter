@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}"> 
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='img/fav.png') }}">
+</head>
+<body>
+    <div class="main">
+        <div class="container">
+            <h2>Payment Information</h2>
+            <div>
+                <p><strong>Seat ID:</strong> {{ seat_id }}</p>
+                <p><strong>Start Time:</strong> {{ start_time }}</p>
+                <p><strong>End Time:</strong> {{ end_time }}</p>
+                <p><strong>Amount:</strong> {{ amount }} VND</p>
+                <form id="payment-form">
+                    <input type="hidden" id="seat-id" name="seat_id" value="{{ seat_id }}">
+                    <input type="hidden" id="amount" name="amount" value="{{ amount }}">
+                    <button type="button" class="btn btn-success" id="submit-payment">Submit</button>
+                    <button type="button" class="btn btn-danger" id="cancel-payment">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/jquery-3.6.0.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            $('#submit-payment').click(function () {
+                var seatId = $('#seat-id').val();
+                var amount = $('#amount').val();
+
+                // Validate seatId and amount
+                if (!seatId || !amount) {
+                    alert('Please provide both seat ID and amount.');
+                    return;
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/submit_payment',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ 'seat_id': seatId, 'amount': amount }),
+                    success: function (response) {
+                        if (response.status === 'success') {
+                            alert('Payment successful!');
+                            window.location.href = '/main_menu';
+                        } else {
+                            alert('Payment failed: ' + response.message);
+                        }
+                    },
+                    error: function (error) {
+                        console.error('Error submitting payment:', error);
+                        alert('Error submitting payment');
+                    }
+                });
+            });
+
+            $('#cancel-payment').click(function () {
+                window.location.href = '/main_menu';  // Redirect to main menu on cancel
+            });
+        });
+
+
+    </script>
+</body>
+</html>
