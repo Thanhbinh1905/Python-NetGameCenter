@@ -13,5 +13,5 @@ How to run:
    -  Install libs for Python:
      + Flask: pip install flask
      + PypyODBC: pip install pypyodbc
-2. Change variables in Connectdb.py to locate to yoủ database
+2. Change variables in Connectdb.py to locate to your database
 3. Run app.py
